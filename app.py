@@ -16,11 +16,10 @@ def cek_gambar(foto):
         format_hasil = {item['label']: item['score'] for item in hasil}
         
         # --- LOGIKA KESIMPULAN ---
-        # Mencari label dengan nilai tertinggi
         label_tertinggi = max(format_hasil, key=format_hasil.get)
         persentase = format_hasil[label_tertinggi] * 100
         
-        # Menentukan kalimat kesimpulan berdasarkan nama label dari datasetmu
+        # Menentukan kalimat kesimpulan berdasarkan nama label
         if label_tertinggi == 'AiArtData':
             kesimpulan = f"🤖 KESIMPULAN: Gambar ini kemungkinan besar BUATAN AI ({persentase:.1f}%)"
         elif label_tertinggi == 'RealArt':
@@ -54,15 +53,21 @@ tema_web5 = gr.themes.Soft(
     button_primary_text_color="white",
 )
 
-# --- CSS KUSTOM ---
+# --- CSS KUSTOM VERSI BESAR & LEGA ---
 css_kustom = """
-.gradio-container { max-width: 1000px !important; margin: auto; padding-top: 2rem !important; }
-h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1px; margin-bottom: 0.2em; font-size: 3em !important; }
-p.subtitle { text-align: center; color: #94a3b8; font-size: 1.2em; margin-bottom: 2em; }
-.btn-grad { background-image: linear-gradient(90deg, #4f46e5, #06b6d4) !important; border: none !important; font-weight: bold !important; font-size: 1.2em !important; padding: 12px !important; margin-top: 15px !important; transition: all 0.3s ease !important; }
+/* Kanvas dilebarkan ke 1200px agar lega */
+.gradio-container { max-width: 1200px !important; margin: auto; padding-top: 3rem !important; }
+
+/* Ukuran Judul dibesarkan */
+h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1px; margin-bottom: 0.2em; font-size: 3.5em !important; }
+p.subtitle { text-align: center; color: #94a3b8; font-size: 1.3em; margin-bottom: 3em; }
+
+/* Tombol lebih besar dan tebal */
+.btn-grad { background-image: linear-gradient(90deg, #4f46e5, #06b6d4) !important; border: none !important; font-weight: bold !important; font-size: 1.3em !important; padding: 15px !important; margin-top: 20px !important; transition: all 0.3s ease !important; }
 .btn-grad:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4) !important; }
-/* Memperbesar teks kesimpulan agar mencolok */
-.kesimpulan-teks textarea { font-size: 1.3em !important; font-weight: bold !important; text-align: center !important; color: #10b981 !important;}
+
+/* Teks kesimpulan dibesarkan agar langsung jadi pusat perhatian */
+.kesimpulan-teks textarea { font-size: 1.5em !important; font-weight: bold !important; text-align: center !important; color: #10b981 !important; line-height: 1.5 !important;}
 """
 
 # --- MEMBANGUN UI SIMETRIS KIRI-KANAN ---
@@ -75,23 +80,25 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
     with gr.Row():
         
         # --- KOLOM KIRI (INPUT) ---
-        with gr.Column(scale=1, min_width=250):
-            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=320)
+        # min_width dinaikkan agar tidak terlalu kurus, tapi tetap aman
+        with gr.Column(scale=1, min_width=350):
+            # Tinggi foto diubah dari 320 ke 420 agar terlihat besar dan jelas
+            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=420)
             tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
-        with gr.Column(scale=1, min_width=250):
-            # 1. Output Kesimpulan Utama (Baru ditambahkan)
+        with gr.Column(scale=1, min_width=350):
+            # Output Kesimpulan
             output_kesimpulan = gr.Textbox(
                 label="🎯 Keputusan AI", 
                 interactive=False, 
                 lines=2,
                 elem_classes="kesimpulan-teks"
             )
-            # 2. Output Detail Grafik Persentase
+            # Output Detail Grafik
             output_hasil = gr.Label(label="📊 Detail Persentase", num_top_classes=2)
             
-    # Menghubungkan logika: Output sekarang ada dua (kesimpulan dan grafik)
+    # Menghubungkan logika
     tombol_cek.click(
         fn=cek_gambar,
         inputs=input_foto,
