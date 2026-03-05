@@ -2,7 +2,6 @@ import gradio as gr
 from transformers import pipeline
 
 # 1. Memanggil Model AI Buatanmu Sendiri!
-# pipeline otomatis mengunduh model "Ripanrz/detektor-ai-v1" dari Hugging Face Hub
 detektor = pipeline("image-classification", model="Ripanrz/detektor-ai-v1")
 
 def cek_gambar(foto):
@@ -14,7 +13,6 @@ def cek_gambar(foto):
         hasil = detektor(foto)
         
         # Mengubah hasil ke format dictionary agar bisa dibaca oleh gr.Label()
-        # Contoh output: {'AiArtData': 0.98, 'RealArt': 0.02}
         format_hasil = {item['label']: item['score'] for item in hasil}
         return format_hasil
         
@@ -42,12 +40,19 @@ tema_web5 = gr.themes.Soft(
     button_primary_text_color="white",
 )
 
-# --- CSS KUSTOM MEMAKSA SIMETRIS ---
+# --- CSS KUSTOM MEMAKSA SIMETRIS & LONGGAR ---
 css_kustom = """
-.gradio-container { max-width: 1000px !important; margin: auto; }
-h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1px; margin-bottom: 0.2em; }
-p.subtitle { text-align: center; color: #94a3b8; font-size: 1.1em; margin-bottom: 2em; }
-.force-row { flex-wrap: nowrap !important; }
+/* Kontainer dilebarkan sedikit agar tidak sesak */
+.gradio-container { max-width: 1100px !important; margin: auto; padding-top: 2rem !important; }
+h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1px; margin-bottom: 0.2em; font-size: 3em !important; }
+p.subtitle { text-align: center; color: #94a3b8; font-size: 1.2em; margin-bottom: 2em; }
+
+/* INI KUNCI SPASINYA: gap: 3rem memberi jarak lebar di tengah */
+.force-row { flex-wrap: nowrap !important; gap: 3rem !important; } 
+
+/* Animasi dan ukuran tombol */
+.btn-grad { background-image: linear-gradient(90deg, #4f46e5, #06b6d4) !important; border: none !important; font-weight: bold !important; font-size: 1.2em !important; padding: 12px !important; margin-top: 15px !important; transition: all 0.3s ease !important; }
+.btn-grad:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4) !important; }
 """
 
 # --- MEMBANGUN UI SIMETRIS KIRI-KANAN ---
@@ -60,14 +65,14 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
     with gr.Row(equal_height=True, elem_classes="force-row"):
         
         # --- KOLOM KIRI (INPUT) ---
-        with gr.Column(scale=1, min_width=300):
-            # Tipe diubah ke "pil" karena pipeline transformers lebih suka format PIL Image
-            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=300)
-            tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg")
+        with gr.Column(scale=1, min_width=350):
+            # Tinggi ditambah agar lebih gagah
+            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=350)
+            tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
-        with gr.Column(scale=1, min_width=300):
-            # Menggunakan gr.Label agar hasil klasifikasi terlihat seperti grafik batang persentase
+        with gr.Column(scale=1, min_width=350):
+            # Hasil diposisikan di kanan dengan lebar yang imbang
             output_hasil = gr.Label(label="📊 Hasil Analisis AI", num_top_classes=2)
             
     # Menghubungkan logika
