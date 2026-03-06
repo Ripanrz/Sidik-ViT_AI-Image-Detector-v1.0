@@ -15,22 +15,21 @@ def cek_gambar(foto):
         # Mengubah hasil ke format dictionary
         format_hasil = {item['label']: item['score'] for item in hasil}
         
-        # --- LOGIKA KESIMPULAN ---
+# --- LOGIKA KESIMPULAN FLEKSIBEL ---
         label_tertinggi = max(format_hasil, key=format_hasil.get)
         persentase = format_hasil[label_tertinggi] * 100
         
-        # Menentukan kalimat kesimpulan berdasarkan nama label
-        if label_tertinggi == 'AiArtData':
+        # Mengubah label ke huruf kecil semua agar gampang dicocokkan
+        label_cek = label_tertinggi.lower()
+        
+        # Mengecek apakah label mengandung kata AI/Palsu
+        if label_cek in ['aiartdata', 'artificial', 'fake', 'ai-generated', 'ai']:
             kesimpulan = f"🤖 KESIMPULAN: Gambar ini kemungkinan besar BUATAN AI ({persentase:.1f}%)"
-        elif label_tertinggi == 'RealArt':
+        # Mengecek apakah label mengandung kata Asli/Manusia
+        elif label_cek in ['realart', 'human', 'real', 'original']:
             kesimpulan = f"📸 KESIMPULAN: Gambar ini kemungkinan besar FOTO ASLI ({persentase:.1f}%)"
         else:
-            kesimpulan = f"📌 KESIMPULAN: Terdeteksi sebagai {label_tertinggi} ({persentase:.1f}%)"
-            
-        return kesimpulan, format_hasil
-        
-    except Exception as e:
-        return f"❌ Terjadi kesalahan: {str(e)}", {"Error": 1.0}
+            kesimpulan = f"📌 KESIMPULAN: Terdeteksi sebagai '{label_tertinggi}' ({persentase:.1f}%)"
 
 # --- TEMA "WEB 5.0" GRADIO ---
 tema_web5 = gr.themes.Soft(
