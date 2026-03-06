@@ -1,7 +1,7 @@
 import gradio as gr
 from transformers import pipeline
 
-# 1. Memanggil Model AI Buatanmu Sendiri!
+# 1. Memanggil Model AI
 detektor = pipeline("image-classification", model="umm-maybe/AI-image-detector")
 
 def cek_gambar(foto):
@@ -15,7 +15,7 @@ def cek_gambar(foto):
         # Mengubah hasil ke format dictionary
         format_hasil = {item['label']: item['score'] for item in hasil}
         
-# --- LOGIKA KESIMPULAN FLEKSIBEL ---
+        # --- LOGIKA KESIMPULAN FLEKSIBEL ---
         label_tertinggi = max(format_hasil, key=format_hasil.get)
         persentase = format_hasil[label_tertinggi] * 100
         
@@ -30,6 +30,12 @@ def cek_gambar(foto):
             kesimpulan = f"📸 KESIMPULAN: Gambar ini kemungkinan besar FOTO ASLI ({persentase:.1f}%)"
         else:
             kesimpulan = f"📌 KESIMPULAN: Terdeteksi sebagai '{label_tertinggi}' ({persentase:.1f}%)"
+
+        return kesimpulan, format_hasil
+        
+    # INI YANG TADI TERHAPUS PAN! Wajib ada sebagai pasangan 'try'
+    except Exception as e:
+        return f"❌ Terjadi kesalahan: {str(e)}", {"Error": 1.0}
 
 # --- TEMA "WEB 5.0" GRADIO ---
 tema_web5 = gr.themes.Soft(
@@ -79,22 +85,18 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
     with gr.Row():
         
         # --- KOLOM KIRI (INPUT) ---
-        # min_width dinaikkan agar tidak terlalu kurus, tapi tetap aman
         with gr.Column(scale=1, min_width=500):
-            # Tinggi foto diubah dari 320 ke 420 agar terlihat besar dan jelas
             input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=400)
             tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
         with gr.Column(scale=1, min_width=500):
-            # Output Kesimpulan
             output_kesimpulan = gr.Textbox(
                 label="🎯 Keputusan AI", 
                 interactive=False, 
                 lines=2,
                 elem_classes="kesimpulan-teks"
             )
-            # Output Detail Grafik
             output_hasil = gr.Label(label="📊 Detail Persentase", num_top_classes=2)
             
     # Menghubungkan logika
