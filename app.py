@@ -83,7 +83,7 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
         # min_width dinaikkan agar tidak terlalu kurus, tapi tetap aman
         with gr.Column(scale=1, min_width=500):
             # Tinggi foto diubah dari 320 ke 420 agar terlihat besar dan jelas
-            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=570)
+            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=400)
             tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
