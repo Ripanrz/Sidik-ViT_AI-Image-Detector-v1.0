@@ -81,7 +81,7 @@ p.subtitle { text-align: center; color: #94a3b8; font-size: 1.3em; margin-bottom
 # --- MEMBANGUN UI KIRI-KANAN LEGASI ---
 with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
     gr.HTML("""
-        <h1>🕵️‍♂️ Detektor AI — V1</h1>
+        <h1>🕵️‍♂️ Detektor AI - V1</h1>
         <p class='subtitle'>Detektor Gambar Asli vs AI-Generated</p>
     """)
     
