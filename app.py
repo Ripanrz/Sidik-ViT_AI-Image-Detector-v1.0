@@ -32,7 +32,7 @@ def cek_gambar(foto):
     except Exception as e:
         return f"❌ Error: {str(e)}", {"Error": 1.0}
 
-# --- TEMA "WEB 5.0" GRADIO ---
+# --- TEMA "WEB 5.0 LEGASI" GRADIO ---
 tema_web5 = gr.themes.Soft(
     primary_hue="indigo",
     secondary_hue="cyan",
@@ -51,57 +51,65 @@ tema_web5 = gr.themes.Soft(
     button_primary_background_fill="linear-gradient(90deg, #4f46e5, #06b6d4)",
     button_primary_background_fill_hover="linear-gradient(90deg, #4338ca, #0891b2)",
     button_primary_text_color="white",
-    block_padding="15px", 
+    # Spasi antar blok dikurangi drastis untuk kesan compact
+    block_padding="12px", 
     block_radius="10px",
 )
 
-# --- CSS KUSTOM VERSI MEDIUM & TERKUNCI KIRI-KANAN ---
+# --- CSS KUSTOM REVISI TOTAL (BESAR & COMPACT) ---
 css_kustom = """
-/* Kanvas disesuaikan ke 1050px (Medium) */
-.gradio-container { max-width: 1050px !important; margin: auto; padding-top: 2rem !important; }
+/* Kanvas dibesarkan secara signifikan (1300px) untuk kesan lega */
+.gradio-container { max-width: 1300px !important; margin: auto; padding-top: 3rem !important; }
 
-/* Judul lebih proporsional */
-h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1px; margin-bottom: 0em; font-size: 3em !important; }
-p.subtitle { text-align: center; color: #94a3b8; font-size: 1.2em; margin-bottom: 2em; margin-top: -5px;}
+/* Ukuran Judul dibesarkan (4.5em) agar mantap */
+h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1.5px; margin-bottom: 0em; font-size: 4.5em !important; }
+p.subtitle { text-align: center; color: #94a3b8; font-size: 1.4em; margin-bottom: 2.5em; margin-top: -10px;}
 
-/* Tombol Medium */
-.btn-grad { background-image: linear-gradient(90deg, #4f46e5, #06b6d4) !important; border: none !important; font-weight: bold !important; font-size: 1.2em !important; padding: 12px !important; margin-top: 15px !important; transition: all 0.3s ease !important; }
-.btn-grad:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.3) !important; }
+/* Tombol dinaikkan ukurannya dan spasi vertikal dipadatkan */
+.btn-grad { background-image: linear-gradient(90deg, #4f46e5, #06b6d4) !important; border: none !important; font-weight: bold !important; font-size: 1.4em !important; padding: 15px !important; margin-top: 20px !important; transition: all 0.3s ease !important; }
+.btn-grad:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4) !important; }
 
-/* Kesimpulan teks Medium */
-.kesimpulan-teks textarea { font-size: 1.8em !important; font-weight: bold !important; text-align: center !important; color: #10b981 !important; line-height: 1.3 !important; padding: 10px !important;}
+/* Teks kesimpulan dibesarkan agar langsung jadi pusat perhatian (2em) */
+.kesimpulan-teks textarea { font-size: 2em !important; font-weight: bold !important; text-align: center !important; color: #10b981 !important; line-height: 1.4 !important; padding: 10px !important;}
 
-/* KUNCI UTAMA: Paksa Row agar tidak turun ke bawah (Kiri-Kanan) */
-.force-row { flex-wrap: nowrap !important; gap: 2rem !important; }
+/* Hapus label yang tumpuk di atas input_foto agar clean */
+#input_foto label { display: none !important; }
+
+/* Padatkan spasi antara tombol dan kotak hasil */
+.output-col { gap: 1rem !important; }
 """
 
-# --- MEMBANGUN UI KIRI-KANAN MEDIUM ---
+# --- MEMBANGUN UI KIRI-KANAN LEGASI ---
 with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
     gr.HTML("""
         <h1>🕵️‍♂️ DeepSight AI</h1>
         <p class='subtitle'>Detektor Gambar Asli vs AI-Generated</p>
     """)
     
-    # Tambahkan class force-row untuk mengunci posisi kiri-kanan
+    # gr.Row memaksa elemen kiri dan kanan sejajar horizontally
     with gr.Row(equal_height=True, elem_classes="force-row"):
         
         # --- KOLOM KIRI (INPUT) ---
-        with gr.Column(scale=1, min_width=300):
-            # Height dinaikkan jadi 350 (Medium)
-            input_foto = gr.Image(type="pil", show_label=False, height=350)
+        with gr.Column(scale=1):
+            # show_label=False dan CSS kustom memastikan tidak ada teks label tumpuk
+            input_foto = gr.Image(type="pil", height=450, show_label=False, elem_id="input_foto")
             tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
-        with gr.Column(scale=1, min_width=300):
+        # elem_classes output-col digunakan untuk merapatkan gap antar elemen di kanan
+        with gr.Column(scale=1, elem_classes="output-col"):
+            # Output Kesimpulan Utama (Besar dan Clean)
             output_kesimpulan = gr.Textbox(
                 show_label=False,
                 interactive=False, 
-                lines=2, # Kembali ke 2 baris agar lebih lega di ukuran Medium
+                lines=2,
                 elem_classes="kesimpulan-teks",
-                placeholder="Menunggu gambar..."
+                placeholder="Keputusan AI"
             )
+            # Output Detail Grafik (Tampilan bawaan gr.Label sudah compact)
             output_hasil = gr.Label(show_label=False, num_top_classes=2)
             
+    # Menghubungkan logika
     tombol_cek.click(
         fn=cek_gambar,
         inputs=input_foto,
