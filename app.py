@@ -1,7 +1,7 @@
 import gradio as gr
 from transformers import pipeline
 
-# 1. Memanggil Model AI Kelas Dunia
+# 1. Memanggil Model AI
 detektor = pipeline("image-classification", model="Ripanrz/detektor-ai-v1")
 
 def cek_gambar(foto):
@@ -85,7 +85,7 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
         <p class='subtitle'>Detektor Gambar Asli vs AI-Generated</p>
     """)
     
-    # KUNCI: Menghapus force-row yang bikin kepotong, biarkan Gradio atur sejajarnya
+    # KUNCI: Biarkan Gradio atur sejajarnya
     with gr.Row():
         
         # --- KOLOM KIRI (INPUT) ---
