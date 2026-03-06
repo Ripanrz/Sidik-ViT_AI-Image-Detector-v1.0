@@ -78,6 +78,8 @@ p.subtitle { text-align: center; color: #94a3b8; font-size: 1.4em; margin-bottom
 /* Padatkan spasi antara tombol dan kotak hasil */
 .output-col { gap: 1rem !important; }
 """
+/* KUNCI UTAMA: Paksa Row agar tidak turun ke bawah (Kiri-Kanan) */
+.force-row { flex-wrap: nowrap !important; gap: 2rem !important; }
 
 # --- MEMBANGUN UI KIRI-KANAN LEGASI ---
 with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
@@ -92,7 +94,7 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
         # --- KOLOM KIRI (INPUT) ---
         with gr.Column(scale=1):
             # show_label=False dan CSS kustom memastikan tidak ada teks label tumpuk
-            input_foto = gr.Image(type="pil", height=600, show_label=False, elem_id="input_foto")
+            input_foto = gr.Image(type="pil", height=450, show_label=False, elem_id="input_foto")
             tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
