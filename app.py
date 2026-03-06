@@ -77,9 +77,10 @@ p.subtitle { text-align: center; color: #94a3b8; font-size: 1.4em; margin-bottom
 
 /* Padatkan spasi antara tombol dan kotak hasil */
 .output-col { gap: 1rem !important; }
-"""
+
 /* KUNCI UTAMA: Paksa Row agar tidak turun ke bawah (Kiri-Kanan) */
 .force-row { flex-wrap: nowrap !important; gap: 2rem !important; }
+"""
 
 # --- MEMBANGUN UI KIRI-KANAN LEGASI ---
 with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
