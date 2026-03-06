@@ -2,7 +2,7 @@ import gradio as gr
 from transformers import pipeline
 
 # 1. Memanggil Model AI Buatanmu Sendiri!
-detektor = pipeline("image-classification", model="Ripanrz/detektor-ai-v1")
+detektor = pipeline("image-classification", model="umm-maybe/AI-image-detector")
 
 def cek_gambar(foto):
     if foto is None:
@@ -81,13 +81,13 @@ with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
         
         # --- KOLOM KIRI (INPUT) ---
         # min_width dinaikkan agar tidak terlalu kurus, tapi tetap aman
-        with gr.Column(scale=1, min_width=350):
+        with gr.Column(scale=1, min_width=500):
             # Tinggi foto diubah dari 320 ke 420 agar terlihat besar dan jelas
-            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=420)
+            input_foto = gr.Image(type="pil", label="📸 1. Unggah Gambar yang Dicurigai", height=570)
             tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
             
         # --- KOLOM KANAN (OUTPUT) ---
-        with gr.Column(scale=1, min_width=350):
+        with gr.Column(scale=1, min_width=500):
             # Output Kesimpulan
             output_kesimpulan = gr.Textbox(
                 label="🎯 Keputusan AI", 
