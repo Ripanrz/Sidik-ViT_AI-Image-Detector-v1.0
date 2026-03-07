@@ -1,116 +1,134 @@
-import gradio as gr
+import streamlit as st
 from transformers import pipeline
+from PIL import Image
 
-# 1. Memanggil Model AI
-detektor = pipeline("image-classification", model="Ripanrz/detektor-ai-v1")
-
-def cek_gambar(foto):
-    if foto is None:
-        return "⚠️ Unggah gambar.", {"Error": 1.0}
-    
-    try:
-        # Melakukan prediksi menggunakan model
-        hasil = detektor(foto)
-        
-        # Mengubah hasil ke format dictionary
-        format_hasil = {item['label']: item['score'] for item in hasil}
-        
-        # --- LOGIKA KESIMPULAN FLEKSIBEL ---
-        label_tertinggi = max(format_hasil, key=format_hasil.get)
-        persentase = format_hasil[label_tertinggi] * 100
-        label_cek = label_tertinggi.lower()
-        
-        if label_cek in ['aiartdata', 'artificial', 'fake', 'ai-generated', 'ai']:
-            kesimpulan = f"🤖 AI ({persentase:.1f}%)"
-        elif label_cek in ['realart', 'human', 'real', 'original']:
-            kesimpulan = f"📸 ASLI ({persentase:.1f}%)"
-        else:
-            kesimpulan = f"📌 '{label_tertinggi}' ({persentase:.1f}%)"
-
-        return kesimpulan, format_hasil
-        
-    except Exception as e:
-        return f"❌ Error: {str(e)}", {"Error": 1.0}
-
-# --- TEMA "WEB 5.0 LEGASI" GRADIO ---
-tema_web5 = gr.themes.Soft(
-    primary_hue="indigo",
-    secondary_hue="cyan",
-    neutral_hue="slate",
-    font=[gr.themes.GoogleFont("Inter"), "sans-serif"]
-).set(
-    body_background_fill="#0b0f19",
-    background_fill_primary="#111827",
-    background_fill_secondary="#1f2937",
-    border_color_primary="#374151",
-    block_background_fill="#1f2937",
-    block_border_width="1px",
-    block_label_background_fill="#4f46e5",
-    block_label_text_color="white",
-    block_title_text_color="white",
-    button_primary_background_fill="linear-gradient(90deg, #4f46e5, #06b6d4)",
-    button_primary_background_fill_hover="linear-gradient(90deg, #4338ca, #0891b2)",
-    button_primary_text_color="white",
-    block_padding="12px", 
-    block_radius="10px",
+# --- 1. KONFIGURASI HALAMAN ---
+st.set_page_config(
+    page_title="Detektor AI - V1",
+    page_icon="🕵️‍♂️",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
-# --- CSS KUSTOM REVISI ANTI-KEPOTONG ---
-css_kustom = """
-/* Kanvas dibatasi max 1100px dan width 95% agar ada margin aman di kiri-kanan */
-.gradio-container { width: 95% !important; max-width: 1100px !important; margin: auto; padding-top: 2rem !important; }
-
-/* Ukuran Judul */
-h1 { text-align: center; color: transparent; background-clip: text; -webkit-background-clip: text; background-image: linear-gradient(90deg, #60a5fa, #a78bfa); font-weight: 900; letter-spacing: -1.5px; margin-bottom: 0em; font-size: 4em !important; }
-p.subtitle { text-align: center; color: #94a3b8; font-size: 1.3em; margin-bottom: 2em; margin-top: -5px;}
-
-/* Tombol */
-.btn-grad { background-image: linear-gradient(90deg, #4f46e5, #06b6d4) !important; border: none !important; font-weight: bold !important; font-size: 1.3em !important; padding: 12px !important; margin-top: 15px !important; transition: all 0.3s ease !important; }
-.btn-grad:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4) !important; }
-
-/* Teks Kesimpulan */
-.kesimpulan-teks textarea { font-size: 1.8em !important; font-weight: bold !important; text-align: center !important; color: #10b981 !important; line-height: 1.4 !important; padding: 10px !important;}
-
-/* Hapus label yang tumpuk di atas input_foto agar clean */
-#input_foto label { display: none !important; }
-
-/* Padatkan spasi antara tombol dan kotak hasil */
-.output-col { gap: 1rem !important; }
-"""
-
-# --- MEMBANGUN UI KIRI-KANAN LEGASI ---
-with gr.Blocks(theme=tema_web5, css=css_kustom) as web_app:
-    gr.HTML("""
-        <h1>🕵️‍♂️ Detektor AI - V1</h1>
-        <p class='subtitle'>Detektor Gambar Asli vs AI-Generated</p>
-    """)
+# --- 2. CSS KUSTOM (TEMA WEB 5.0 LEGASI) ---
+st.markdown("""
+<style>
+    /* Ukuran Judul dengan Gradien */
+    .title-text {
+        text-align: center;
+        background: linear-gradient(90deg, #60a5fa, #a78bfa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 4em;
+        font-weight: 900;
+        margin-bottom: 0px;
+        padding-top: 10px;
+    }
+    .subtitle-text {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 1.3em;
+        margin-top: -10px;
+        margin-bottom: 40px;
+    }
     
-    # KUNCI: Biarkan Gradio atur sejajarnya
-    with gr.Row():
-        
-        # --- KOLOM KIRI (INPUT) ---
-        # min_width diatur ke 320 agar proporsional
-        with gr.Column(scale=1, min_width=320):
-            input_foto = gr.Image(type="pil", height=400, show_label=False, elem_id="input_foto")
-            tombol_cek = gr.Button("Mulai Analisis 🚀", variant="primary", size="lg", elem_classes="btn-grad")
-            
-        # --- KOLOM KANAN (OUTPUT) ---
-        with gr.Column(scale=1, min_width=320, elem_classes="output-col"):
-            output_kesimpulan = gr.Textbox(
-                show_label=False,
-                interactive=False, 
-                lines=2,
-                elem_classes="kesimpulan-teks",
-                placeholder="Keputusan AI"
-            )
-            output_hasil = gr.Label(show_label=False, num_top_classes=2)
-            
-    # Menghubungkan logika
-    tombol_cek.click(
-        fn=cek_gambar,
-        inputs=input_foto,
-        outputs=[output_kesimpulan, output_hasil]
-    )
+    /* Kotak Hasil Kesimpulan */
+    .result-box {
+        text-align: center;
+        font-size: 2.2em;
+        font-weight: bold;
+        color: #10b981;
+        padding: 20px;
+        border-radius: 10px;
+        background-color: #1f2937;
+        border: 1px solid #374151;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Tombol Kustom */
+    div.stButton > button:first-child {
+        background: linear-gradient(90deg, #4f46e5, #06b6d4);
+        color: white;
+        border: none;
+        font-weight: bold;
+        font-size: 1.2em;
+        padding: 10px 24px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    div.stButton > button:first-child:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+    }
+</style>
+""", unsafe_allow_html=True)
 
-if __name__ == "__main__":
-    web_app.launch()
+# --- 3. MEMANGGIL MODEL AI DENGAN CACHE ---
+# WAJIB pakai st.cache_resource agar model tidak diload berulang kali
+@st.cache_resource
+def load_model():
+    return pipeline("image-classification", model="Ripanrz/detektor-ai-v1")
+
+detektor = load_model()
+
+# --- 4. HEADER UI ---
+st.markdown("<h1 class='title-text'>🕵️‍♂️ Detektor AI - V1</h1>", unsafe_allow_html=True)
+st.markdown("<p class='subtitle-text'>Detektor Gambar Asli vs AI-Generated</p>", unsafe_allow_html=True)
+
+# --- 5. TATA LETAK KOLOM KIRI & KANAN ---
+col1, col2 = st.columns([1, 1], gap="large")
+
+with col1:
+    st.markdown("### 📥 Input Gambar")
+    # Widget Upload Foto
+    foto_upload = st.file_uploader("Pilih gambar...", type=['png', 'jpg', 'jpeg', 'webp'], label_visibility="collapsed")
+    
+    if foto_upload is not None:
+        # Menampilkan Preview Gambar
+        image = Image.open(foto_upload)
+        st.image(image, use_container_width=True)
+        
+        # Tombol Eksekusi
+        tombol_cek = st.button("Mulai Analisis 🚀", use_container_width=True)
+    else:
+        tombol_cek = False
+
+with col2:
+    st.markdown("### 📊 Hasil Analisis")
+    
+    if foto_upload is None:
+        st.info("👈 Silakan unggah gambar di kolom sebelah kiri untuk memulai.")
+        
+    elif tombol_cek:
+        with st.spinner("Menganalisis gambar dengan teliti..."):
+            try:
+                # 1. Melakukan prediksi menggunakan model
+                hasil = detektor(image)
+                
+                # 2. Mengubah hasil ke format dictionary
+                format_hasil = {item['label']: item['score'] for item in hasil}
+                
+                # 3. Logika Kesimpulan Fleksibel
+                label_tertinggi = max(format_hasil, key=format_hasil.get)
+                persentase = format_hasil[label_tertinggi] * 100
+                label_cek = label_tertinggi.lower()
+                
+                if label_cek in ['aiartdata', 'artificial', 'fake', 'ai-generated', 'ai']:
+                    kesimpulan = f"🤖 AI ({persentase:.1f}%)"
+                elif label_cek in ['realart', 'human', 'real', 'original']:
+                    kesimpulan = f"📸 ASLI ({persentase:.1f}%)"
+                else:
+                    kesimpulan = f"📌 '{label_tertinggi}' ({persentase:.1f}%)"
+
+                # 4. Menampilkan Kesimpulan Utama
+                st.markdown(f"<div class='result-box'>{kesimpulan}</div>", unsafe_allow_html=True)
+                
+                # 5. Menampilkan Breakdown Persentase (Pengganti gr.Label)
+                st.markdown("#### Detail Kepercayaan Model:")
+                for label, score in format_hasil.items():
+                    # Streamlit progress bar menerima nilai 0.0 - 1.0
+                    st.progress(float(score), text=f"{label} ({score*100:.1f}%)")
+                    
+            except Exception as e:
+                st.error(f"❌ Terjadi kesalahan: {str(e)}")
