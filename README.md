@@ -1,9 +1,9 @@
 ---
-title: Detektor Ai V1
+title: Detektor Ai - V1
 emoji: 👁
 colorFrom: indigo
 colorTo: yellow
-sdk: gradio
+sdk: streamlit
 sdk_version: 6.8.0
 app_file: app.py
 pinned: false
