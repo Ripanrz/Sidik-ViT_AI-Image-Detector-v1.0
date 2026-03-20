@@ -4,7 +4,7 @@ from PIL import Image
 
 # --- 1. KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="Detektor AI - V1",
+    page_title="Detektor AI - V1.0",
     page_icon="🕵️‍♂️",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -68,12 +68,12 @@ st.markdown("""
 # WAJIB pakai st.cache_resource agar model tidak diload berulang kali
 @st.cache_resource
 def load_model():
-    return pipeline("image-classification", model="Ripanrz/detektor-ai-v1")
+    return pipeline("image-classification", model="Ripanrz/detektor-ai-v1.0")
 
 detektor = load_model()
 
 # --- 4. HEADER UI ---
-st.markdown("<h1 class='title-text'>🕵️‍♂️ Detektor AI - V1</h1>", unsafe_allow_html=True)
+st.markdown("<h1 class='title-text'>🕵️‍♂️ Detektor AI - V1.0</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle-text'>Sistem Identifikasi Gambar Asli vs AI-Generated</p>", unsafe_allow_html=True)
 
 # --- 5. TATA LETAK KOLOM KIRI & KANAN ---
