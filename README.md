@@ -1,5 +1,5 @@
 ---
-title: Detektor Ai - V1
+title: Detektor Ai - V1.0
 emoji: 👁
 colorFrom: indigo
 colorTo: yellow
