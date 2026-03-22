@@ -61,6 +61,25 @@ st.markdown("""
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
     }
+    
+    /* =========================================
+       SOLUSI ANTI-GETAR HUGGING FACE SPACES
+       ========================================= */
+    /* 1. Mengunci tinggi layar minimal agar iframe tidak kaget */
+    .block-container {
+        min-height: 100vh;
+        padding-bottom: 5rem;
+    }
+    
+    /* 2. Menstabilkan area gambar agar tidak membuat lompatan layout */
+    [data-testid="stImage"] {
+        min-height: 300px; 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #0e1117; /* Sesuaikan dengan warna background tema kamu */
+        border-radius: 8px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
