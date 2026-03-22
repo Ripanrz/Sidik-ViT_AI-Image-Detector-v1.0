@@ -79,6 +79,13 @@ st.markdown("<p class='subtitle-text'>Sistem Identifikasi Gambar Asli vs AI-Gene
 # --- 5. TATA LETAK KOLOM KIRI & KANAN ---
 col1, col2 = st.columns([1, 1.2], gap="large")
 
+# --- INISIALISASI SESSION STATE (MEMORI UI) ---
+# Ini kunci agar layar tidak goyang dan hasil tidak hilang saat diklik hal lain
+if 'hasil_analisis' not in st.session_state:
+    st.session_state.hasil_analisis = None
+if 'nama_gambar_terakhir' not in st.session_state:
+    st.session_state.nama_gambar_terakhir = None
+
 with col1:
     st.markdown("### 📥 Input Gambar")
     foto_upload = st.file_uploader("Pilih gambar...", type=['png', 'jpg', 'jpeg', 'webp'], label_visibility="collapsed")
@@ -86,56 +93,71 @@ with col1:
     if foto_upload is not None:
         image = Image.open(foto_upload)
         st.image(image, use_container_width=True)
+        
+        # Jika user mengganti gambar, reset memori hasil analisis sebelumnya
+        if st.session_state.nama_gambar_terakhir != foto_upload.name:
+            st.session_state.hasil_analisis = None
+            st.session_state.nama_gambar_terakhir = foto_upload.name
+            
         tombol_cek = st.button("Mulai Analisis 🚀", use_container_width=True)
+        
+        # Pindahkan spinner ke kolom 1 di bawah tombol agar kolom 2 tidak "kaget" ukurannya
+        if tombol_cek:
+            with st.spinner("Model sedang mengevaluasi pola piksel gambar..."):
+                try:
+                    # Simpan hasil ke dalam session_state, bukan variabel biasa
+                    st.session_state.hasil_analisis = detektor(image)
+                except Exception as e:
+                    st.error(f"❌ Terjadi kesalahan komputasi: {str(e)}")
     else:
-        tombol_cek = False
+        # Bersihkan memori jika gambar di-clear (silang ditekan)
+        st.session_state.hasil_analisis = None
+        st.session_state.nama_gambar_terakhir = None
 
 with col2:
     st.markdown("### 📊 Hasil Analisis")
     
-    if foto_upload is None:
-        st.info("👈 Silakan unggah gambar di kolom sebelah kiri untuk memulai eksekusi.")
-        
-    elif tombol_cek:
-        with st.spinner("Model sedang mengevaluasi pola piksel gambar..."):
-            try:
-                # 1. Melakukan prediksi 
-                hasil = detektor(image)
-                
-                # 2. Mengubah hasil ke format dictionary
-                format_hasil = {item['label']: item['score'] for item in hasil}
-                
-                # 3. Menganalisis Label Tertinggi
-                label_tertinggi = max(format_hasil, key=format_hasil.get)
-                persentase = format_hasil[label_tertinggi] * 100
-                label_cek = label_tertinggi.lower()
-                
-                # 4. Logika Kesimpulan Visual
-                if label_cek in ['FAKE', 'aiartdata', 'artificial', 'fake', 'ai-generated', 'ai']:
-                    keputusan_final = "🤖 GAMBAR INI BUATAN AI"
-                    warna_teks = "#ef4444" # Merah
-                elif label_cek in ['realart', 'human', 'real', 'original', 'REAL']:
-                    keputusan_final = "📸 GAMBAR INI ASLI (MANUSIA/KAMERA)"
-                    warna_teks = "#10b981" # Hijau
-                else:
-                    keputusan_final = f"📌 TERDETEKSI: {label_tertinggi.upper()}"
-                    warna_teks = "#f59e0b" # Kuning
-                
-                # 5. TAMPILKAN KESIMPULAN FINAL (KOTAK BESAR)
-                st.markdown(f"""
-                <div class='result-box-final'>
-                    <span style='font-size: 0.5em; color: #9ca3af;'>KESIMPULAN MODEL ({persentase:.1f}%)</span><br>
-                    <span style='color: {warna_teks};'>{keputusan_final}</span>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # 6. TAMPILKAN BREAKDOWN PERSENTASE
-                st.markdown("#### Detail Tingkat Kepercayaan (*Confidence Score*):")
-                st.markdown("<br>", unsafe_allow_html=True) # Tambah sedikit spasi
-                
-                for label, score in format_hasil.items():
-                    # Progress bar untuk setiap label yang dikembalikan model
-                    st.progress(float(score), text=f"Label: {label} ({score*100:.2f}%)")
-                    
-            except Exception as e:
-                st.error(f"❌ Terjadi kesalahan komputasi: {str(e)}")
+    # Bungkus hasil dalam wadah kosong untuk menstabilkan tinggi elemen
+    wadah_hasil = st.container()
+    
+    with wadah_hasil:
+        if foto_upload is None:
+            st.info("👈 Silakan unggah gambar di kolom sebelah kiri untuk memulai eksekusi.")
+            
+        elif st.session_state.hasil_analisis is not None:
+            # 1. Ambil hasil dari memori UI
+            hasil = st.session_state.hasil_analisis
+            
+            # 2. Mengubah hasil ke format dictionary
+            format_hasil = {item['label']: item['score'] for item in hasil}
+            
+            # 3. Menganalisis Label Tertinggi
+            label_tertinggi = max(format_hasil, key=format_hasil.get)
+            persentase = format_hasil[label_tertinggi] * 100
+            label_cek = label_tertinggi.lower()
+            
+            # 4. Logika Kesimpulan Visual
+            if label_cek in ['fake', 'aiartdata', 'artificial', 'ai-generated', 'ai']:
+                keputusan_final = "🤖 GAMBAR INI BUATAN AI"
+                warna_teks = "#ef4444" # Merah
+            elif label_cek in ['realart', 'human', 'real', 'original']:
+                keputusan_final = "📸 GAMBAR INI ASLI (MANUSIA/KAMERA)"
+                warna_teks = "#10b981" # Hijau
+            else:
+                keputusan_final = f"📌 TERDETEKSI: {label_tertinggi.upper()}"
+                warna_teks = "#f59e0b" # Kuning
+            
+            # 5. TAMPILKAN KESIMPULAN FINAL
+            st.markdown(f"""
+            <div class='result-box-final'>
+                <span style='font-size: 0.5em; color: #9ca3af;'>KESIMPULAN MODEL ({persentase:.1f}%)</span><br>
+                <span style='color: {warna_teks};'>{keputusan_final}</span>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # 6. TAMPILKAN BREAKDOWN PERSENTASE
+            st.markdown("#### Detail Tingkat Kepercayaan (*Confidence Score*):")
+            st.markdown("<br>", unsafe_allow_html=True)
+            
+            for label, score in format_hasil.items():
+                st.progress(float(score), text=f"Label: {label} ({score*100:.2f}%)")
