@@ -111,10 +111,10 @@ with col2:
                 label_cek = label_tertinggi.lower()
                 
                 # 4. Logika Kesimpulan Visual
-                if label_cek in ['aiartdata', 'artificial', 'fake', 'ai-generated', 'ai']:
+                if label_cek in ['FAKE', 'aiartdata', 'artificial', 'fake', 'ai-generated', 'ai']:
                     keputusan_final = "🤖 GAMBAR INI BUATAN AI"
                     warna_teks = "#ef4444" # Merah
-                elif label_cek in ['realart', 'human', 'real', 'original']:
+                elif label_cek in ['realart', 'human', 'real', 'original', 'REAL']:
                     keputusan_final = "📸 GAMBAR INI ASLI (MANUSIA/KAMERA)"
                     warna_teks = "#10b981" # Hijau
                 else:
