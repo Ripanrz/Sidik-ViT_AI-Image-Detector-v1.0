@@ -1,5 +1,5 @@
 ---
-title: Detektor Ai - V1.0
+title: Sidik-ViT:AI Image Detector v1.0
 emoji: 👁
 colorFrom: indigo
 colorTo: yellow
