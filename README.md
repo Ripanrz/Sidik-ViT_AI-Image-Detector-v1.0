@@ -25,7 +25,7 @@ Mengambil filosofi kata **"Sidik"** (Sunda/Indonesia) yang berarti *memeriksa de
 > *Antarmuka inferensi berbasis web yang mulus dan interaktif, di-deploy secara live di ekosistem Hugging Face Spaces.*
 
 <div align="center">
-  <img src="src/Tampilan_Aplikasi.png" alt="Tampilan Dashboard Sidik-ViT" width="800">
+  <img src="img/Cuplikan-layar-2026-03-23_172334.png" alt="Tampilan Dashboard Sidik-ViT" width="800">
 </div>
 
 ---
