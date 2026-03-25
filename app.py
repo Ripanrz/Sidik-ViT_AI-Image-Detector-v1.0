@@ -87,7 +87,7 @@ st.markdown("""
 # WAJIB pakai st.cache_resource agar model tidak diload berulang kali
 @st.cache_resource
 def load_model():
-    return pipeline("image-classification", model="Ripanrz/detektor-ai-v1.0")
+    return pipeline("image-classification", model="Ripanrz/detektor-ai-v1.1")
 
 detektor = load_model()
 
